@@ -59,7 +59,7 @@ module.exports = {
 
         if (!correctPassword) {
           errors.password = "password is incorrect";
-          throw new AuthenticationError("password is incorrect", { errors });
+          throw new UserInputError("password is incorrect", { errors });
         }
 
         const token = jwt.sign(
@@ -95,7 +95,7 @@ module.exports = {
         if (password.trim() === "")
           errors.password = "password must not be empty";
         if (confirmPassword.trim() === "")
-          errors.confirmPassword = "repeat password must not be empty";
+          errors.confirmPassword = "confirm password must not be empty";
 
         if (password !== confirmPassword)
           errors.confirmPassword = "passwords must match";
