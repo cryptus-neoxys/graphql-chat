@@ -110,7 +110,10 @@ module.exports = {
         });
 
         // Return user
-        return user;
+        return {
+          ...user.toJSON(),
+          createdAt: user.createdAt.toISOString(),
+        };
       } catch (err) {
         console.log(err);
         if (err.name === "SequelizeUniqueConstraintError") {
