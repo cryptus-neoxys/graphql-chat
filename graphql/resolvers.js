@@ -2,33 +2,21 @@ const bcrypt = require("bcryptjs");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
+const { Message, User } = require("../models");
 
-const { User } = require("../models");
 const { JWT_SECRET } = require("../config/env.json");
 
 module.exports = {
   Query: {
-    getUsers: async (_, __, context) => {
+    getUsers: async (_, __, { user }) => {
       try {
-        if (context.req && context.req.headers.authorization) {
-          const token = context.req.headers.authorization.split("Bearer ")[1];
-          jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
-            if (err) {
-              throw new AuthenticationError("Unauthenticated");
-            }
-            user = decodedToken;
+        if (!user) throw new AuthenticationError();
 
-            console.log(user);
-          });
-        }
         const users = await User.findAll({
           where: { username: { [Op.ne]: user.username } },
         });
 
-        return {
-          ...user.toJSON(),
-          createdAt: user.createdAt.toISOString(),
-        };
+        return users;
       } catch (err) {
         console.log(err);
         throw err;
@@ -133,6 +121,34 @@ module.exports = {
           err.errors.forEach((e) => (errors[e.path] = e.message));
         }
         throw new UserInputError("Bad input", { errors });
+      }
+    },
+    sendMessage: async (parent, { to, content }, { user }) => {
+      try {
+        if (!user) throw new AuthenticationError("Unauthenticated");
+
+        const recepient = await User.findOne({ where: { username: to } });
+
+        if (!recepient) {
+          throw new UserInputError("User not found");
+        } else if (recepient.username === user.username) {
+          throw new UserInputError(`Can't message self`);
+        }
+
+        if (content.trim() === "") {
+          throw new UserInputError("Message is empty");
+        }
+
+        const message = await Message.create({
+          from: user.username,
+          to,
+          content,
+        });
+
+        return message;
+      } catch (err) {
+        console.log(err);
+        throw err;
       }
     },
   },
