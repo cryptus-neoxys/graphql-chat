@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -10,11 +10,9 @@ import Messages from "../home/Messages";
 export default function Home({ history }) {
   const dispatch = useAuthDispatch();
 
-  const [selectedUser, setSelectedUser] = useState(null);
-
   const logout = () => {
     dispatch({ type: "LOGOUT" });
-    history.push("/login");
+    window.location.href = "/login";
   };
 
   return (
@@ -31,8 +29,8 @@ export default function Home({ history }) {
         </Button>
       </Row>
       <Row className="bg-white">
-        <Users setSelectedUser={setSelectedUser} selectedUser={selectedUser} />
-        <Messages selectedUser={selectedUser} />
+        <Users />
+        <Messages />
       </Row>
     </>
   );
