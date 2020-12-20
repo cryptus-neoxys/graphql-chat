@@ -41,7 +41,10 @@ const messageReducer = (state, action) => {
 
       let upadtedUser = {
         ...updatedUsers[userIndex],
-        messages: [message, ...updatedUsers[userIndex].messages],
+        messages: updatedUsers[userIndex].messages
+          ? [message, ...updatedUsers[userIndex].messages]
+          : null,
+        latestMessage: message,
       };
       updatedUsers[userIndex] = upadtedUser;
 
