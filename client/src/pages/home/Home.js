@@ -21,7 +21,7 @@ const NEW_MESSAGE = gql`
   }
 `;
 
-export default function Home({ history }) {
+export default function Home() {
   const authDispatch = useAuthDispatch();
   const messageDispatch = useMessageDispatch();
 
